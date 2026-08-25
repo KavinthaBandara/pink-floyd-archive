@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Album {
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
+  year        Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  songs Song[]
+}
+
+model Song {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique
+  year        Int?
+  lyrics    String?
+  albumId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@unique([albumId, title])
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+model User {
+  UserId    Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  discussions Discussion[]
+  messages Message[]
+}
+
+model Discussion {
+  DiscussionId Int      @id @default(autoincrement())
+  title        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userId      Int
+
+  messages Message[]
+
+  user User @relation(fields: [userId], references: [UserId], onDelete: Cascade)
+
+}
+
+model Message {
+  MessageId    Int      @id @default(autoincrement())
+  content      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  DiscussionId Int
+  userId       Int
+
+  user       User       @relation(fields: [userId], references: [UserId], onDelete: Cascade)
+  Discussion Discussion @relation(fields: [DiscussionId], references: [DiscussionId], onDelete: Cascade)
+}
+
+
+
